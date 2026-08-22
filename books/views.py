@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Q
 from django.urls import reverse_lazy
 from django.views.generic import (
@@ -60,21 +60,30 @@ class BookDetailView(DetailView):
     context_object_name = 'book'
 
 
-class BookCreateView(LoginRequiredMixin, CreateView):
+class BookCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Book
     form_class = BookForm
     template_name = 'books/book_form.html'
     success_url = reverse_lazy('books:book_list')
 
+    def test_func(self):
+        return self.request.user.is_staff
 
-class BookUpdateView(LoginRequiredMixin, UpdateView):
+
+class BookUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Book
     form_class = BookForm
     template_name = 'books/book_form.html'
     success_url = reverse_lazy('books:book_list')
 
+    def test_func(self):
+        return self.request.user.is_staff
 
-class BookDeleteView(DeleteView):
+
+class BookDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Book
     template_name = 'books/book_confirm_delete.html'
+
+    def test_func(self):
+        return self.request.user.is_staff
     success_url = reverse_lazy('books:book_list')

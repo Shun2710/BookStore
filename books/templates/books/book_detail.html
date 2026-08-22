@@ -42,6 +42,7 @@
 
         <div class="mt-4">
 
+            {% if user.is_staff %}
             <a href="{% url 'books:book_update' book.pk %}" class="btn btn-warning">
                 Edit
             </a>
@@ -49,6 +50,8 @@
             <a href="{% url 'books:book_delete' book.pk %}" class="btn btn-danger">
                 Delete
             </a>
+
+            {% endif %}
 
             <a href="{% url 'books:book_list' %}" class="btn btn-secondary">
                 Back to Books
