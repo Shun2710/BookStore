@@ -24,9 +24,9 @@
 
             <option value="">All categories</option>
 
-            {% for category in categories %}
-            <option value="{{ category.slug }}">
-                {{ category.name }}
+            {% for item in category_options %}
+            <option value="{{ item.category.slug }}" {{ item.selected }}>
+                {{ item.category.name }}
             </option>
             {% endfor %}
 

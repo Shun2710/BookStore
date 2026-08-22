@@ -18,10 +18,10 @@ class BookListView(ListView):
     template_name = 'books/book_list.html'
     context_object_name = 'books'
     paginate_by = 5
-    ordering = ['id']
+    ordering = ['title']
 
     def get_queryset(self):
-        queryset = Book.objects.all()
+        queryset = Book.objects.all().order_by('title')
 
         search = self.request.GET.get('search')
         if search:
@@ -38,8 +38,20 @@ class BookListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['categories'] = Category.objects.all()
+
+        selected_category = self.request.GET.get('category', '')
+        categories = Category.objects.all()
+
+        context['category_options'] = [
+        {
+            'category': category,
+            'selected': 'selected' if category.slug == selected_category else ''
+        }
+        for category in categories
+    ]
+
         return context
+
 
 
 class BookDetailView(DetailView):
