@@ -1,3 +1,7 @@
+import stripe
+
+from django.conf import settings
+from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Q
 from django.urls import reverse_lazy
@@ -9,8 +13,9 @@ from django.views.generic import (
     DeleteView,
 )
 
-from .models import Book, Category
+from .models import Book, Category, Order, OrderItem
 from .forms import BookForm
+from .cart import Cart
 
 
 class BookListView(ListView):
@@ -87,3 +92,54 @@ class BookDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         return self.request.user.is_staff
     success_url = reverse_lazy('books:book_list')
+
+
+def cart_add(request, book_id):
+    cart = Cart(request)
+    book = Book.objects.get(id=book_id)
+    cart.add(book=book)
+    return redirect('books:book_list')
+
+
+def cart_remove(request, book_id):
+    cart = Cart(request)
+    book = Book.objects.get(id=book_id)
+    cart.remove(book)
+    return redirect('books:book_list')
+
+
+def cart_clear(request):
+    cart = Cart(request)
+    cart.clear()
+    return redirect('books:book_list')
+
+
+def create_checkout_session(request):
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+
+    cart = Cart(request)
+    line_items = []
+
+    for book_id, item in cart.cart.items():
+        book = Book.objects.get(id=book_id)
+
+        line_items.append({
+            "price_data": {
+                "currency": "eur",
+                "product_data": {
+                    "name": book.title,
+                },
+                "unit_amount": int(book.price * 100),
+            },
+            "quantity": item["quantity"],
+        })
+
+    session = stripe.checkout.Session.create(
+        payment_method_types=["card"],
+        line_items=line_items,
+        mode="payment",
+        success_url=request.build_absolute_uri("/"),
+        cancel_url=request.build_absolute_uri("/"),
+    )
+
+    return redirect(session.url)

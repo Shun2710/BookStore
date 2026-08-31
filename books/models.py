@@ -26,9 +26,31 @@ class Book(models.Model):
         related_name="books"
     )
 
-    class Meta:
+class Meta:
         verbose_name = "Book"
         verbose_name_plural = "Books"
 
-    def __str__(self):
+def __str__(self):
         return self.title
+    
+class Order(models.Model): 
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Order #{self.id}"
+
+
+class OrderItem(models.Model):
+        order = models.ForeignKey( Order,
+        on_delete=models.CASCADE,
+        related_name="items"
+        )
+        book = models.ForeignKey(
+        Book,
+        on_delete=models.CASCADE
+        )
+        quantity = models.PositiveIntegerField(default=1)
+        price = models.DecimalField(max_digits=8, decimal_places=2)
+
+        def __str__(self):
+            return f"{self.quantity} x {self.book.title}"

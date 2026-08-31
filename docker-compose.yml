@@ -6,6 +6,9 @@ services:
       - .:/app
     ports:
       - "8000:8000"
+    environment:
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:-}
     depends_on:
       db:
         condition: service_healthy
