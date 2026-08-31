@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Cart{% endblock %}
+
+{% block content %}
+<h1>Shopping Cart</h1>
+
+{% if cart.cart %}
+{% for book_id, item in cart.cart.items %}
+<div class="card mb-3">
+    <div class="card-body">
+        <p>Book ID: {{ book_id }}</p>
+        <p>Quantity: {{ item.quantity }}</p>
+        <p>Price: ${{ item.price }}</p>
+
+        <a href="{% url 'books:cart_remove' book_id %}" class="btn btn-danger">
+            Remove
+        </a>
+    </div>
+</div>
+{% endfor %}
+
+<a href="{% url 'books:cart_clear' %}" class="btn btn-warning">
+    Clear cart
+</a>
+
+<a href="{% url 'books:create_checkout_session' %}" class="btn btn-success">
+    Pay with Stripe
+</a>
+
+{% else %}
+<p>Your cart is empty.</p>
+{% endif %}
+
+<a href="{% url 'books:book_list' %}" class="btn btn-secondary mt-3">
+    Back to Books
+</a>
+{% endblock %}

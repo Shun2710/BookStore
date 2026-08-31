@@ -1,9 +1,11 @@
 import stripe
 
 from django.conf import settings
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Q
+from django.db import transaction
+from django.core.mail import send_mail
 from django.urls import reverse_lazy
 from django.views.generic import (
     ListView,
@@ -98,7 +100,7 @@ def cart_add(request, book_id):
     cart = Cart(request)
     book = Book.objects.get(id=book_id)
     cart.add(book=book)
-    return redirect('books:book_list')
+    return redirect('books:cart_detail')
 
 
 def cart_remove(request, book_id):
@@ -138,8 +140,43 @@ def create_checkout_session(request):
         payment_method_types=["card"],
         line_items=line_items,
         mode="payment",
-        success_url=request.build_absolute_uri("/"),
+        success_url=request.build_absolute_uri("/order/create/"),
         cancel_url=request.build_absolute_uri("/"),
     )
 
     return redirect(session.url)
+
+def create_order(request):
+    cart = Cart(request)
+
+    with transaction.atomic():
+        order = Order.objects.create()
+
+        for book_id, item in cart.cart.items():
+            book = Book.objects.get(id=book_id)
+
+            OrderItem.objects.create(
+                order=order,
+                book=book,
+                quantity=item["quantity"],
+                price=book.price,
+            )
+
+    cart.clear()
+
+
+    send_mail(
+    subject="Order created",
+    message=f"Your order #{order.id} has been created successfully.",
+    from_email=settings.DEFAULT_FROM_EMAIL,
+    recipient_list=[settings.DEFAULT_FROM_EMAIL],
+    fail_silently=False,
+    )
+
+    
+    return redirect("books:book_list")
+
+
+def cart_detail(request):
+    cart = Cart(request)
+    return render(request, "books/cart_detail.html", {"cart": cart})

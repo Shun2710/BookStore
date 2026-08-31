@@ -42,6 +42,12 @@
 
         <div class="mt-4">
 
+
+            <a href="{% url 'books:cart_add' book.id %}" class="btn btn-success">
+                Add to cart
+            </a>
+
+
             {% if user.is_staff %}
             <a href="{% url 'books:book_update' book.pk %}" class="btn btn-warning">
                 Edit
