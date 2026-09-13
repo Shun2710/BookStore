@@ -1,0 +1,149 @@
+# Ukrainian translations for BookStore.
+# Copyright (C) 2026
+# This file is distributed under the same license as the BookStore package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: BookStore 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-13 18:46+0000\n"
+"PO-Revision-Date: 2026-09-13 18:55+0100\n"
+"Last-Translator: \n"
+"Language-Team: Ukrainian\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgid "Books"
+msgstr "Книги"
+
+msgid "Hello"
+msgstr "Привіт"
+
+msgid "Logout"
+msgstr "Вийти"
+
+msgid "Add Book"
+msgstr "Додати книгу"
+
+msgid "Login"
+msgstr "Увійти"
+
+msgid "Register"
+msgstr "Реєстрація"
+
+msgid "Name"
+msgstr "Назва"
+
+msgid "Slug"
+msgstr "Слаг"
+
+msgid "Category"
+msgstr "Категорія"
+
+msgid "Categories"
+msgstr "Категорії"
+
+msgid "Title"
+msgstr "Назва"
+
+msgid "Author"
+msgstr "Автор"
+
+msgid "Price"
+msgstr "Ціна"
+
+msgid "Description"
+msgstr "Опис"
+
+msgid "Stock"
+msgstr "Кількість"
+
+msgid "Book"
+msgstr "Книга"
+
+msgid "Created at"
+msgstr "Створено"
+
+msgid "Order"
+msgstr "Замовлення"
+
+msgid "Orders"
+msgstr "Замовлення"
+
+msgid "Quantity"
+msgstr "Кількість"
+
+msgid "Order item"
+msgstr "Позиція замовлення"
+
+msgid "Order items"
+msgstr "Позиції замовлення"
+
+msgid "Search by title or author..."
+msgstr "Пошук за назвою або автором..."
+
+msgid "All categories"
+msgstr "Усі категорії"
+
+msgid "Search"
+msgstr "Пошук"
+
+msgid "Reset"
+msgstr "Скинути"
+
+msgid "Details"
+msgstr "Деталі"
+
+msgid "Add to cart"
+msgstr "Додати до кошика"
+
+msgid "Edit"
+msgstr "Редагувати"
+
+msgid "Delete"
+msgstr "Видалити"
+
+msgid "Back to Books"
+msgstr "Назад до книг"
+
+msgid "Add New Book"
+msgstr "Додати нову книгу"
+
+msgid "Save Book"
+msgstr "Зберегти книгу"
+
+msgid "Cancel"
+msgstr "Скасувати"
+
+msgid "Delete Book"
+msgstr "Видалити книгу"
+
+msgid "Are you sure you want to delete <strong>%(title)s</strong>?"
+msgstr "Ви впевнені, що хочете видалити <strong>%(title)s</strong>?"
+
+msgid "Yes, Delete"
+msgstr "Так, видалити"
+
+msgid "Cart"
+msgstr "Кошик"
+
+msgid "Shopping Cart"
+msgstr "Кошик"
+
+msgid "Book ID"
+msgstr "ID книги"
+
+msgid "Remove"
+msgstr "Видалити"
+
+msgid "Clear cart"
+msgstr "Очистити кошик"
+
+msgid "Pay with Stripe"
+msgstr "Оплатити через Stripe"
+
+msgid "Your cart is empty."
+msgstr "Ваш кошик порожній."

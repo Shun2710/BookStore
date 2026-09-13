@@ -1,15 +1,16 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}Books - Book Store{% endblock %}
+{% block title %}{% trans "Books" %} - Book Store{% endblock %}
 
 {% block content %}
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>📚 Books</h1>
+    <h1>📚 {% trans "Books" %}</h1>
 
     {% if user.is_staff %}
     <a href="{% url 'books:book_create' %}" class="btn btn-success">
-        + Add Book
+        + {% trans "Add Book" %}
     </a>
     {% endif %}
 </div>
@@ -17,14 +18,14 @@
 <form method="get" class="row g-2 mb-4">
 
     <div class="col-md-5">
-        <input type="text" name="search" class="form-control" placeholder="Search by title or author..."
+        <input type="text" name="search" class="form-control" placeholder="{% trans 'Search by title or author...' %}"
             value="{{ request.GET.search }}">
     </div>
 
     <div class="col-md-3">
         <select name="category" class="form-select">
 
-            <option value="">All categories</option>
+            <option value="">{% trans "All categories" %}</option>
 
             {% for item in category_options %}
             <option value="{{ item.category.slug }}" {{ item.selected }}>
@@ -37,13 +38,13 @@
 
     <div class="col-md-2">
         <button type="submit" class="btn btn-primary w-100">
-            Search
+            {% trans "Search" %}
         </button>
     </div>
 
     <div class="col-md-2">
         <a href="{% url 'books:book_list' %}" class="btn btn-secondary w-100">
-            Reset
+            {% trans "Reset" %}
         </a>
     </div>
 
@@ -64,22 +65,22 @@
                 </h5>
 
                 <p class="card-text">
-                    <strong>Author:</strong>
+                    <strong>{% trans "Author" %}:</strong>
                     {{ book.author }}
                 </p>
 
                 <p class="card-text">
-                    <strong>Price:</strong>
+                    <strong>{% trans "Price" %}:</strong>
                     €{{ book.price }}
                 </p>
 
                 <p class="card-text">
-                    <strong>Stock:</strong>
+                    <strong>{% trans "Stock" %}:</strong>
                     {{ book.stock }}
                 </p>
 
                 <a href="{% url 'books:book_detail' book.pk %}" class="btn btn-primary">
-                    Details
+                    {% trans "Details" %}
                 </a>
 
             </div>

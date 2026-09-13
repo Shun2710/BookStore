@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% block title %}{{ book.title }} - Book Store{% endblock %}
 
@@ -13,27 +14,27 @@
         <hr>
 
         <p>
-            <strong>Author:</strong>
+            <strong>{% trans "Author" %}:</strong>
             {{ book.author }}
         </p>
 
         <p>
-            <strong>Price:</strong>
+            <strong>{% trans "Price" %}:</strong>
             €{{ book.price }}
         </p>
 
         <p>
-            <strong>Stock:</strong>
+            <strong>{% trans "Stock" %}:</strong>
             {{ book.stock }}
         </p>
 
         <p>
-            <strong>Category:</strong>
+            <strong>{% trans "Category" %}:</strong>
             {{ book.category.name }}
         </p>
 
         <p>
-            <strong>Description:</strong>
+            <strong>{% trans "Description" %}:</strong>
         </p>
 
         <p>
@@ -44,23 +45,23 @@
 
 
             <a href="{% url 'books:cart_add' book.id %}" class="btn btn-success">
-                Add to cart
+                {% trans "Add to cart" %}
             </a>
 
 
             {% if user.is_staff %}
             <a href="{% url 'books:book_update' book.pk %}" class="btn btn-warning">
-                Edit
+                {% trans "Edit" %}
             </a>
 
             <a href="{% url 'books:book_delete' book.pk %}" class="btn btn-danger">
-                Delete
+                {% trans "Delete" %}
             </a>
 
             {% endif %}
 
             <a href="{% url 'books:book_list' %}" class="btn btn-secondary">
-                Back to Books
+                {% trans "Back to Books" %}
             </a>
 
         </div>
