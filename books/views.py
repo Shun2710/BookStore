@@ -2,6 +2,7 @@ import stripe
 
 from django.conf import settings
 from django.shortcuts import redirect, render
+from django.http import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Q
 from django.db import transaction
@@ -19,6 +20,40 @@ from .models import Book, Category, Order, OrderItem
 from .forms import BookForm
 from .cart import Cart
 
+
+async def async_book_count(request):
+    book_count = await Book.objects.acount()
+
+    return JsonResponse({
+        "book_count": book_count,
+    })
+
+async def async_book_detail(request, book_id):
+    book = await Book.objects.aget(pk=book_id)
+
+    return JsonResponse({
+        "id": book.id,
+        "title": book.title,
+        "author": book.author,
+        "price": str(book.price),
+        "stock": book.stock,
+    })
+
+async def async_book_list(request):
+    books = []
+
+    async for book in Book.objects.all().order_by("title"):
+        books.append({
+            "id": book.id,
+            "title": book.title,
+            "author": book.author,
+            "price": str(book.price),
+            "stock": book.stock,
+        })
+
+    return JsonResponse({
+        "books": books,
+    })
 
 class BookListView(ListView):
     model = Book
