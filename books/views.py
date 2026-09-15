@@ -7,7 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Q
 from django.db import transaction
 from django.core.mail import send_mail
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views.generic import (
     ListView,
     DetailView,
@@ -81,16 +81,20 @@ class BookListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        selected_category = self.request.GET.get('category', '')
+        selected_category = self.request.GET.get("category", "")
         categories = Category.objects.all()
 
-        context['category_options'] = [
-        {
-            'category': category,
-            'selected': 'selected' if category.slug == selected_category else ''
-        }
-        for category in categories
-    ]
+        context["category_options"] = [
+            {
+                "category": category,
+                "selected": (
+                    "selected"
+                    if category.slug == selected_category
+                    else ""
+                ),
+           }
+           for category in categories
+        ]
 
         return context
 
@@ -153,12 +157,21 @@ def cart_clear(request):
 
 def create_checkout_session(request):
     stripe.api_key = settings.STRIPE_SECRET_KEY
-
     cart = Cart(request)
+
+    if not cart.cart:
+        return redirect("books:cart_detail")
+
+    book_ids = cart.cart.keys()
+    books = Book.objects.in_bulk(book_ids)
+
     line_items = []
 
     for book_id, item in cart.cart.items():
-        book = Book.objects.get(id=book_id)
+        book = books.get(int(book_id))
+
+        if book is None:
+            continue
 
         line_items.append({
             "price_data": {
@@ -175,8 +188,12 @@ def create_checkout_session(request):
         payment_method_types=["card"],
         line_items=line_items,
         mode="payment",
-        success_url=request.build_absolute_uri("/order/create/"),
-        cancel_url=request.build_absolute_uri("/"),
+        success_url=request.build_absolute_uri(
+            reverse("books:create_order")
+        ),
+        cancel_url=request.build_absolute_uri(
+            reverse("books:book_list")
+        ),
     )
 
     return redirect(session.url)
@@ -197,8 +214,22 @@ def create_order(request):
                 price=book.price,
             )
 
+        transaction.on_commit(
+            lambda: send_mail(
+                subject="Order created",
+                message=(
+                    f"Your order #{order.id} "
+                    "has been created successfully."
+                ),
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[settings.DEFAULT_FROM_EMAIL],
+                fail_silently=False,
+            )
+        )
+
     cart.clear()
 
+    return redirect("books:book_list")
 
     send_mail(
     subject="Order created",

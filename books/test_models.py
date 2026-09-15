@@ -10,18 +10,21 @@ from books.factories import (
 
 @pytest.mark.django_db
 def test_category_str():
+    # Generated with AI, reviewed and modified
     category = CategoryFactory(name="Fiction")
     assert str(category) == "Fiction"
 
 
 @pytest.mark.django_db
 def test_book_str():
+    # Generated with AI, reviewed and modified
     book = BookFactory(title="1984")
     assert str(book) == "1984"
 
 
 @pytest.mark.django_db
 def test_book_has_category():
+    # Generated with AI, reviewed and modified
     category = CategoryFactory(name="Classics")
     book = BookFactory(category=category)
 
@@ -30,18 +33,21 @@ def test_book_has_category():
 
 @pytest.mark.django_db
 def test_book_default_stock():
+    # Generated with AI, reviewed and modified
     book = BookFactory(stock=10)
     assert book.stock == 10
 
 
 @pytest.mark.django_db
 def test_order_str():
+    # Generated with AI, reviewed and modified
     order = OrderFactory()
     assert str(order) == f"Order #{order.id}"
 
 
 @pytest.mark.django_db
 def test_order_item_str():
+    # Generated with AI, reviewed and modified
     item = OrderItemFactory(quantity=3)
 
     assert str(item) == f"3 x {item.book.title}"
@@ -49,6 +55,7 @@ def test_order_item_str():
 
 @pytest.mark.django_db
 def test_order_item_price_matches_book():
+    # Generated with AI, reviewed and modified
     item = OrderItemFactory()
 
     assert item.price == item.book.price
@@ -56,6 +63,7 @@ def test_order_item_price_matches_book():
 
 @pytest.mark.django_db
 def test_order_contains_items():
+    # Generated with AI, reviewed and modified
     order = OrderFactory()
     item = OrderItemFactory(order=order)
 
