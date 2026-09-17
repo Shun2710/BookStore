@@ -22,6 +22,7 @@ from .cart import Cart
 
 
 async def async_book_count(request):
+    """Return the total number of books using an asynchronous database query."""
     book_count = await Book.objects.acount()
 
     return JsonResponse({
@@ -29,6 +30,7 @@ async def async_book_count(request):
     })
 
 async def async_book_detail(request, book_id):
+    """Return details of a single book using an asynchronous database query."""
     book = await Book.objects.aget(pk=book_id)
 
     return JsonResponse({
@@ -40,6 +42,7 @@ async def async_book_detail(request, book_id):
     })
 
 async def async_book_list(request):
+    """Return all books as JSON using asynchronous queryset iteration."""
     books = []
 
     async for book in Book.objects.all().order_by("title"):
@@ -56,6 +59,8 @@ async def async_book_list(request):
     })
 
 class BookListView(ListView):
+    """Display a paginated list of books with search and category filtering."""
+
     model = Book
     template_name = 'books/book_list.html'
     context_object_name = 'books'
@@ -101,12 +106,16 @@ class BookListView(ListView):
 
 
 class BookDetailView(DetailView):
+    """Display detailed information about a single book."""
+
     model = Book
     template_name = 'books/book_detail.html'
     context_object_name = 'book'
 
 
 class BookCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    """Allow staff users to create a new book."""
+
     model = Book
     form_class = BookForm
     template_name = 'books/book_form.html'
@@ -117,6 +126,8 @@ class BookCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
 
 class BookUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    """Allow staff users to update an existing book."""
+
     model = Book
     form_class = BookForm
     template_name = 'books/book_form.html'
@@ -127,6 +138,8 @@ class BookUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 
 class BookDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    """Allow staff users to delete an existing book."""
+
     model = Book
     template_name = 'books/book_confirm_delete.html'
 
@@ -136,6 +149,8 @@ class BookDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 
 def cart_add(request, book_id):
+    """Add the selected book to the shopping cart."""
+
     cart = Cart(request)
     book = Book.objects.get(id=book_id)
     cart.add(book=book)
@@ -143,6 +158,8 @@ def cart_add(request, book_id):
 
 
 def cart_remove(request, book_id):
+    """Remove the selected book from the shopping cart."""
+
     cart = Cart(request)
     book = Book.objects.get(id=book_id)
     cart.remove(book)
@@ -150,12 +167,16 @@ def cart_remove(request, book_id):
 
 
 def cart_clear(request):
+    """Remove all books from the shopping cart."""
+
     cart = Cart(request)
     cart.clear()
     return redirect('books:book_list')
 
 
 def create_checkout_session(request):
+    """Create a Stripe Checkout Session for the books in the shopping cart."""
+
     stripe.api_key = settings.STRIPE_SECRET_KEY
     cart = Cart(request)
 
@@ -199,6 +220,8 @@ def create_checkout_session(request):
     return redirect(session.url)
 
 def create_order(request):
+    """Create an order from the cart and send a confirmation email after commit."""
+
     cart = Cart(request)
 
     with transaction.atomic():
@@ -244,5 +267,7 @@ def create_order(request):
 
 
 def cart_detail(request):
+    """Display the current contents of the shopping cart."""
+
     cart = Cart(request)
     return render(request, "books/cart_detail.html", {"cart": cart})
