@@ -19,6 +19,9 @@ from django.views.generic import (
 from .models import Book, Category, Order, OrderItem
 from .forms import BookForm
 from .cart import Cart
+from rest_framework import viewsets
+
+from .serializers import BookSerializer, CategorySerializer
 
 
 async def async_book_count(request):
@@ -271,3 +274,18 @@ def cart_detail(request):
 
     cart = Cart(request)
     return render(request, "books/cart_detail.html", {"cart": cart})
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    """API endpoint for viewing and managing book categories."""
+
+    queryset = Category.objects.all().order_by("name")
+    serializer_class = CategorySerializer
+    filterset_fields = ["name", "slug"]
+
+
+class BookViewSet(viewsets.ModelViewSet):
+    """API endpoint for viewing and managing books."""
+
+    queryset = Book.objects.select_related("category").all().order_by("title")
+    serializer_class = BookSerializer
+    filterset_fields = ["author", "category", "stock"]
