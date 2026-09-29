@@ -1,7 +1,7 @@
 import stripe
 
 from django.conf import settings
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.http import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Q
@@ -19,9 +19,15 @@ from django.views.generic import (
 from .models import Book, Category, Order, OrderItem
 from .forms import BookForm
 from .cart import Cart
-from rest_framework import viewsets
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
-from .serializers import BookSerializer, CategorySerializer
+from .serializers import ( BookSerializer, CartAddSerializer, CartItemSerializer, CategorySerializer, OrderSerializer,)
+
+from rest_framework.permissions import IsAuthenticated
+
+from .permissions import IsAdminOrReadOnly
 
 
 async def async_book_count(request):
@@ -280,6 +286,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
     queryset = Category.objects.all().order_by("name")
     serializer_class = CategorySerializer
+    permission_classes = [IsAdminOrReadOnly]
     filterset_fields = ["name", "slug"]
 
 
@@ -288,4 +295,88 @@ class BookViewSet(viewsets.ModelViewSet):
 
     queryset = Book.objects.select_related("category").all().order_by("title")
     serializer_class = BookSerializer
+    permission_classes = [IsAdminOrReadOnly]
     filterset_fields = ["author", "category", "stock"]
+
+class OrderViewSet(viewsets.ModelViewSet):
+    """API endpoint for viewing and managing orders."""
+
+    queryset = Order.objects.prefetch_related(
+        "items__book__category"
+    ).all().order_by("-created_at")
+    serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
+    filterset_fields = ["created_at"]
+
+class CartViewSet(viewsets.ViewSet):
+    """API endpoint for managing the session-based shopping cart."""
+
+    permission_classes = [IsAuthenticated]
+
+    def list(self, request):
+        """Return all items currently stored in the cart."""
+        cart = Cart(request)
+
+        items = [
+            {
+                "book_id": int(book_id),
+                "quantity": item["quantity"],
+                "price": item["price"],
+            }
+            for book_id, item in cart.cart.items()
+        ]
+
+        serializer = CartItemSerializer(items, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=["post"])
+    def add(self, request):
+        """Add a book to the shopping cart."""
+        serializer = CartAddSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        book = get_object_or_404(
+            Book,
+            id=serializer.validated_data["book_id"],
+        )
+
+        cart = Cart(request)
+        cart.add(
+            book=book,
+            quantity=serializer.validated_data["quantity"],
+        )
+
+        return Response(
+            {"detail": "Book added to cart."},
+            status=status.HTTP_200_OK,
+        )
+
+    @action(detail=False, methods=["post"])
+    def remove(self, request):
+        """Remove a book from the shopping cart."""
+        serializer = CartAddSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        book = get_object_or_404(
+            Book,
+            id=serializer.validated_data["book_id"],
+        )
+
+        cart = Cart(request)
+        cart.remove(book)
+
+        return Response(
+            {"detail": "Book removed from cart."},
+            status=status.HTTP_200_OK,
+        )
+
+    @action(detail=False, methods=["post"])
+    def clear(self, request):
+        """Remove all books from the shopping cart."""
+        cart = Cart(request)
+        cart.clear()
+
+        return Response(
+            {"detail": "Cart cleared."},
+            status=status.HTTP_200_OK,
+        )
