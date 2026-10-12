@@ -217,3 +217,33 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://redis:6379/1",
+    }
+}
+
+# Celery configuration
+CELERY_BROKER_URL = "redis://redis:6379/0"
+CELERY_RESULT_BACKEND = "redis://redis:6379/0"
+
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_ACCEPT_CONTENT = ["json"]
+
+CELERY_TIMEZONE = TIME_ZONE
+
+from celery.schedules import crontab
+
+CELERY_BEAT_SCHEDULE = {
+    "cleanup-expired-sessions-daily": {
+        "task": "books.tasks.cleanup_expired_sessions",
+        "schedule": crontab(hour=3, minute=0),
+    },
+    "generate-bookstore-report-daily": {
+        "task": "books.tasks.generate_bookstore_report",
+        "schedule": crontab(hour=4, minute=0),
+    },
+}

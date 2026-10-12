@@ -1,5 +1,6 @@
 import stripe
 
+from .tasks import send_order_email
 from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import JsonResponse
@@ -8,6 +9,8 @@ from django.db.models import Q
 from django.db import transaction
 from django.core.mail import send_mail
 from django.urls import reverse, reverse_lazy
+from django.core.cache import cache
+from django.shortcuts import get_object_or_404
 from django.views.generic import (
     ListView,
     DetailView,
@@ -118,8 +121,20 @@ class BookDetailView(DetailView):
     """Display detailed information about a single book."""
 
     model = Book
-    template_name = 'books/book_detail.html'
-    context_object_name = 'book'
+    template_name = "books/book_detail.html"
+    context_object_name = "book"
+
+    def get_object(self, queryset=None):
+        book_id = self.kwargs["pk"]
+        cache_key = f"book_detail_{book_id}"
+
+        book = cache.get(cache_key)
+
+        if book is None:
+            book = get_object_or_404(Book, pk=book_id)
+            cache.set(cache_key, book, timeout=300)
+
+        return book
 
 
 class BookCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -247,15 +262,13 @@ def create_order(request):
             )
 
         transaction.on_commit(
-            lambda: send_mail(
+            lambda: send_order_email.delay(
                 subject="Order created",
                 message=(
                     f"Your order #{order.id} "
                     "has been created successfully."
                 ),
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[settings.DEFAULT_FROM_EMAIL],
-                fail_silently=False,
+                recipient_email=settings.DEFAULT_FROM_EMAIL,
             )
         )
 

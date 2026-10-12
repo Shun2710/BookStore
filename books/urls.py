@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from django.views.decorators.cache import cache_page
 
 from .views import (
     BookListView,
@@ -30,7 +31,9 @@ urlpatterns = [
     views.async_book_list,
     name="async_book_list",
     ),
-    path('', BookListView.as_view(), name='book_list'),
+    path('', cache_page(60)(BookListView.as_view()),
+    name='book_list',
+    ),
     path('book/<int:pk>/', BookDetailView.as_view(), name='book_detail'),
     path('book/add/', BookCreateView.as_view(), name='book_create'),
     path('book/<int:pk>/edit/', BookUpdateView.as_view(), name='book_update'),
