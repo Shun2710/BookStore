@@ -151,6 +151,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
 AUTH_USER_MODEL = 'accounts.User'
 
 LOGIN_REDIRECT_URL = '/'
