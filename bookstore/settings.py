@@ -249,3 +249,13 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(hour=4, minute=0),
     },
 }
+
+# Sentry error monitoring
+import sentry_sdk
+
+if os.getenv("SENTRY_DSN"):
+    sentry_sdk.init(
+        dsn=os.getenv("SENTRY_DSN"),
+        traces_sample_rate=0.1,
+        send_default_pii=False,
+    )
