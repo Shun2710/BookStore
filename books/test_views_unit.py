@@ -14,9 +14,7 @@ def test_book_list_view_returns_200(client):
 def test_book_detail_view_returns_200(client):
     book = BookFactory()
 
-    response = client.get(
-        reverse("books:book_detail", args=[book.pk])
-    )
+    response = client.get(reverse("books:book_detail", args=[book.pk]))
 
     assert response.status_code == 200
 
@@ -39,9 +37,7 @@ def test_book_list_filter_by_category(client):
 def test_async_book_count(client):
     BookFactory.create_batch(3)
 
-    response = client.get(
-        reverse("books:async_book_count")
-    )
+    response = client.get(reverse("books:async_book_count"))
 
     assert response.status_code == 200
     assert response.json()["book_count"] == 3
@@ -74,9 +70,7 @@ def test_async_book_list(client):
     BookFactory(title="Book A")
     BookFactory(title="Book B")
 
-    response = client.get(
-        reverse("books:async_book_list")
-    )
+    response = client.get(reverse("books:async_book_list"))
 
     data = response.json()
 

@@ -8,18 +8,18 @@ class BookForm(forms.ModelForm):
     class Meta:
         model = Book
         fields = [
-            'title',
-            'author',
-            'price',
-            'description',
-            'stock',
-            'category',
+            "title",
+            "author",
+            "price",
+            "description",
+            "stock",
+            "category",
         ]
         labels = {
-            'title': _('Title'),
-            'author': _('Author'),
-            'price': _('Price'),
-            'description': _('Description'),
-            'stock': _('Stock'),
-            'category': _('Category'),
+            "title": _("Title"),
+            "author": _("Author"),
+            "price": _("Price"),
+            "description": _("Description"),
+            "stock": _("Stock"),
+            "category": _("Category"),
         }

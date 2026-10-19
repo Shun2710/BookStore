@@ -2,7 +2,6 @@ from rest_framework.routers import DefaultRouter
 
 from .views import BookViewSet, CartViewSet, CategoryViewSet, OrderViewSet
 
-
 router = DefaultRouter()
 
 

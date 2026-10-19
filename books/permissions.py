@@ -22,6 +22,7 @@ class IsAdminOrReadOnly(IsAdminUser):
 
         return False
 
+
 from rest_framework.permissions import IsAdminUser
 
 

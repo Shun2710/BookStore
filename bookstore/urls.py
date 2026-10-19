@@ -13,23 +13,22 @@ from bookstore.health import health_check
 
 urlpatterns = [
     path("health/", health_check, name="health_check"),
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
     path("api/", include("books.api_urls")),
     path(
         "api/schema/",
         SpectacularAPIView.as_view(),
         name="api-schema",
-   ),
+    ),
     path(
         "api/docs/",
         SpectacularSwaggerView.as_view(url_name="api-schema"),
         name="api-docs",
     ),
-    path('i18n/', include('django.conf.urls.i18n')),
-    path('__debug__/', include('debug_toolbar.urls')),
-    path('accounts/', include('accounts.urls')),
-    path('', include('books.urls')),
-
+    path("i18n/", include("django.conf.urls.i18n")),
+    path("__debug__/", include("debug_toolbar.urls")),
+    path("accounts/", include("accounts.urls")),
+    path("", include("books.urls")),
     path(
         "api/token/",
         TokenObtainPairView.as_view(),
@@ -39,7 +38,7 @@ urlpatterns = [
         "api/token/refresh/",
         TokenRefreshView.as_view(),
         name="token_refresh",
-  ),
+    ),
     path(
         "api/token/verify/",
         TokenVerifyView.as_view(),

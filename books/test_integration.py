@@ -9,7 +9,6 @@ from books.factories import (
 )
 from books.models import Order
 
-
 User = get_user_model()
 
 
@@ -23,9 +22,7 @@ def test_home_page_loads(client):
 def test_book_detail_flow(client):
     book = BookFactory()
 
-    response = client.get(
-        reverse("books:book_detail", args=[book.pk])
-    )
+    response = client.get(reverse("books:book_detail", args=[book.pk]))
 
     assert response.status_code == 200
     assert book.title.encode() in response.content
@@ -135,9 +132,7 @@ def test_regular_user_cannot_open_add_book_page(client):
 def test_add_book_to_cart_flow(client):
     book = BookFactory()
 
-    response = client.get(
-        reverse("books:cart_add", args=[book.pk])
-    )
+    response = client.get(reverse("books:cart_add", args=[book.pk]))
 
     assert response.status_code == 302
     assert "cart" in client.session
@@ -148,13 +143,9 @@ def test_add_book_to_cart_flow(client):
 def test_remove_book_from_cart_flow(client):
     book = BookFactory()
 
-    client.get(
-        reverse("books:cart_add", args=[book.pk])
-    )
+    client.get(reverse("books:cart_add", args=[book.pk]))
 
-    response = client.get(
-        reverse("books:cart_remove", args=[book.pk])
-    )
+    response = client.get(reverse("books:cart_remove", args=[book.pk]))
 
     assert response.status_code == 302
     assert str(book.pk) not in client.session["cart"]
@@ -164,13 +155,9 @@ def test_remove_book_from_cart_flow(client):
 def test_clear_cart_flow(client):
     book = BookFactory()
 
-    client.get(
-        reverse("books:cart_add", args=[book.pk])
-    )
+    client.get(reverse("books:cart_add", args=[book.pk]))
 
-    response = client.get(
-        reverse("books:cart_clear")
-    )
+    response = client.get(reverse("books:cart_clear"))
 
     assert response.status_code == 302
     assert client.session["cart"] == {}
@@ -180,13 +167,9 @@ def test_clear_cart_flow(client):
 def test_cart_page_flow(client):
     book = BookFactory()
 
-    client.get(
-        reverse("books:cart_add", args=[book.pk])
-    )
+    client.get(reverse("books:cart_add", args=[book.pk]))
 
-    response = client.get(
-        reverse("books:cart_detail")
-    )
+    response = client.get(reverse("books:cart_detail"))
 
     assert response.status_code == 200
     assert str(book.pk).encode() in response.content
@@ -196,18 +179,14 @@ def test_cart_page_flow(client):
 def test_create_order_flow(client, monkeypatch):
     book = BookFactory()
 
-    client.get(
-        reverse("books:cart_add", args=[book.pk])
-    )
+    client.get(reverse("books:cart_add", args=[book.pk]))
 
     monkeypatch.setattr(
         "books.views.send_mail",
         lambda *args, **kwargs: 1,
     )
 
-    response = client.get(
-        reverse("books:create_order")
-    )
+    response = client.get(reverse("books:create_order"))
 
     assert response.status_code == 302
     assert Order.objects.count() == 1

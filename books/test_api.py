@@ -84,6 +84,7 @@ def test_admin_can_create_book(api_client):
     assert response.status_code == status.HTTP_201_CREATED
     assert response.data["title"] == "API Test Book"
 
+
 @pytest.mark.django_db
 def test_categories_list(api_client):
     CategoryFactory.create_batch(3)
@@ -159,6 +160,7 @@ def test_admin_can_create_category(api_client):
     assert response.data["name"] == "Science Fiction"
     assert response.data["slug"] == "science-fiction"
 
+
 @pytest.mark.django_db
 def test_anonymous_user_cannot_view_orders(api_client):
     response = api_client.get("/api/orders/")
@@ -217,14 +219,13 @@ def test_order_contains_nested_items(api_client):
 
     order_item = OrderItemFactory()
 
-    response = api_client.get(
-        f"/api/orders/{order_item.order.id}/"
-    )
+    response = api_client.get(f"/api/orders/{order_item.order.id}/")
 
     assert response.status_code == status.HTTP_200_OK
     assert len(response.data["items"]) == 1
     assert response.data["items"][0]["quantity"] == order_item.quantity
     assert "book" in response.data["items"][0]
+
 
 @pytest.mark.django_db
 def test_anonymous_user_cannot_view_cart(api_client):
@@ -314,6 +315,7 @@ def test_authenticated_user_can_remove_book_from_cart(api_client):
 
     cart_response = api_client.get("/api/cart/")
     assert cart_response.data == []
+
 
 @pytest.mark.django_db
 def test_jwt_token_obtain(api_client):
@@ -423,9 +425,7 @@ def test_jwt_access_token_can_access_orders(api_client):
 
     access_token = token_response.data["access"]
 
-    api_client.credentials(
-        HTTP_AUTHORIZATION=f"Bearer {access_token}"
-    )
+    api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {access_token}")
 
     response = api_client.get("/api/orders/")
 

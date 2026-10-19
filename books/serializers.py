@@ -34,6 +34,7 @@ class BookSerializer(serializers.ModelSerializer):
             "category_id",
         ]
 
+
 class OrderItemSerializer(serializers.ModelSerializer):
     """Serializer for items contained in an order."""
 
@@ -61,6 +62,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "created_at",
             "items",
         ]
+
 
 class CartItemSerializer(serializers.Serializer):
     """Serializer for an item stored in the shopping cart."""

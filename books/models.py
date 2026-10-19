@@ -1,6 +1,7 @@
 from django.utils.translation import gettext_lazy as _
 from django.db import models
 
+
 class Category(models.Model):
     name = models.CharField(_("Name"), max_length=100)
     slug = models.SlugField(_("Slug"), unique=True)
@@ -16,11 +17,7 @@ class Category(models.Model):
 class Book(models.Model):
     title = models.CharField(_("Title"), max_length=255)
     author = models.CharField(_("Author"), max_length=255)
-    price = models.DecimalField(
-        _("Price"),
-        max_digits=8,
-        decimal_places=2
-    )
+    price = models.DecimalField(_("Price"), max_digits=8, decimal_places=2)
     description = models.TextField(_("Description"), blank=True)
     stock = models.PositiveIntegerField(_("Stock"), default=0)
 
@@ -37,12 +34,10 @@ class Book(models.Model):
 
     def __str__(self):
         return self.title
-    
+
+
 class Order(models.Model):
-    created_at = models.DateTimeField(
-        _("Created at"),
-        auto_now_add=True
-    )
+    created_at = models.DateTimeField(_("Created at"), auto_now_add=True)
 
     class Meta:
         verbose_name = _("Order")
@@ -64,15 +59,8 @@ class OrderItem(models.Model):
         on_delete=models.CASCADE,
         verbose_name=_("Book"),
     )
-    quantity = models.PositiveIntegerField(
-        _("Quantity"),
-        default=1
-    )
-    price = models.DecimalField(
-        _("Price"),
-        max_digits=8,
-        decimal_places=2
-    )
+    quantity = models.PositiveIntegerField(_("Quantity"), default=1)
+    price = models.DecimalField(_("Price"), max_digits=8, decimal_places=2)
 
     class Meta:
         verbose_name = _("Order item")

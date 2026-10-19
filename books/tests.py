@@ -5,10 +5,7 @@ from .models import Book, Category
 class BookModelTest(TestCase):
 
     def setUp(self):
-        self.category = Category.objects.create(
-            name="Fiction",
-            slug="fiction"
-        )
+        self.category = Category.objects.create(name="Fiction", slug="fiction")
 
         self.book = Book.objects.create(
             title="1984",
@@ -16,7 +13,7 @@ class BookModelTest(TestCase):
             price=12.99,
             description="Dystopian novel",
             stock=5,
-            category=self.category
+            category=self.category,
         )
 
     def test_book_created(self):
@@ -27,6 +24,7 @@ class BookModelTest(TestCase):
 
     def test_book_string(self):
         self.assertEqual(str(self.book), "1984")
+
 
 class BookViewTest(TestCase):
 
@@ -41,13 +39,12 @@ class BookViewTest(TestCase):
             author="George Orwell",
             price=12.99,
             stock=5,
-            category=category
+            category=category,
         )
 
         response = self.client.get(f"/book/{book.pk}/")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "1984")
-
 
     def test_filter_by_category(self):
         category = Category.objects.create(name="Fiction", slug="fiction")
@@ -56,9 +53,9 @@ class BookViewTest(TestCase):
             author="George Orwell",
             price=12.99,
             stock=5,
-            category=category
-       )
+            category=category,
+        )
 
         response = self.client.get("/?category=fiction")
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "1984") 
+        self.assertContains(response, "1984")

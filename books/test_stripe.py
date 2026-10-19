@@ -8,9 +8,7 @@ from books.factories import BookFactory
 def test_create_checkout_session_uses_stripe_mock(client, monkeypatch):
     book = BookFactory(price="15.99")
 
-    client.get(
-        reverse("books:cart_add", args=[book.pk])
-    )
+    client.get(reverse("books:cart_add", args=[book.pk]))
 
     class FakeSession:
         url = "https://stripe.test/checkout"
@@ -23,9 +21,7 @@ def test_create_checkout_session_uses_stripe_mock(client, monkeypatch):
         fake_create,
     )
 
-    response = client.get(
-        reverse("books:create_checkout_session")
-    )
+    response = client.get(reverse("books:create_checkout_session"))
 
     assert response.status_code == 302
     assert response.url == "https://stripe.test/checkout"

@@ -17,6 +17,7 @@ def send_order_email(subject, message, recipient_email):
         fail_silently=False,
     )
 
+
 @shared_task
 def generate_bookstore_report():
     """Generate a summary report about books and orders."""
@@ -27,6 +28,7 @@ def generate_bookstore_report():
             OrderItem.objects.aggregate(total=Sum("quantity"))["total"] or 0
         ),
     }
+
 
 @shared_task
 def cleanup_expired_sessions():

@@ -26,7 +26,13 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .serializers import ( BookSerializer, CartAddSerializer, CartItemSerializer, CategorySerializer, OrderSerializer,)
+from .serializers import (
+    BookSerializer,
+    CartAddSerializer,
+    CartItemSerializer,
+    CategorySerializer,
+    OrderSerializer,
+)
 
 from rest_framework.permissions import IsAuthenticated
 
@@ -37,59 +43,69 @@ async def async_book_count(request):
     """Return the total number of books using an asynchronous database query."""
     book_count = await Book.objects.acount()
 
-    return JsonResponse({
-        "book_count": book_count,
-    })
+    return JsonResponse(
+        {
+            "book_count": book_count,
+        }
+    )
+
 
 async def async_book_detail(request, book_id):
     """Return details of a single book using an asynchronous database query."""
     book = await Book.objects.aget(pk=book_id)
 
-    return JsonResponse({
-        "id": book.id,
-        "title": book.title,
-        "author": book.author,
-        "price": str(book.price),
-        "stock": book.stock,
-    })
+    return JsonResponse(
+        {
+            "id": book.id,
+            "title": book.title,
+            "author": book.author,
+            "price": str(book.price),
+            "stock": book.stock,
+        }
+    )
+
 
 async def async_book_list(request):
     """Return all books as JSON using asynchronous queryset iteration."""
     books = []
 
     async for book in Book.objects.all().order_by("title"):
-        books.append({
-            "id": book.id,
-            "title": book.title,
-            "author": book.author,
-            "price": str(book.price),
-            "stock": book.stock,
-        })
+        books.append(
+            {
+                "id": book.id,
+                "title": book.title,
+                "author": book.author,
+                "price": str(book.price),
+                "stock": book.stock,
+            }
+        )
 
-    return JsonResponse({
-        "books": books,
-    })
+    return JsonResponse(
+        {
+            "books": books,
+        }
+    )
+
 
 class BookListView(ListView):
     """Display a paginated list of books with search and category filtering."""
 
     model = Book
-    template_name = 'books/book_list.html'
-    context_object_name = 'books'
+    template_name = "books/book_list.html"
+    context_object_name = "books"
     paginate_by = 5
-    ordering = ['title']
+    ordering = ["title"]
 
     def get_queryset(self):
-        queryset = Book.objects.all().order_by('title')
+        queryset = Book.objects.all().order_by("title")
 
-        search = self.request.GET.get('search')
+        search = self.request.GET.get("search")
         if search:
             queryset = queryset.filter(
-                Q(title__icontains=search) |
-                Q(author__icontains=search)
+                Q(title__icontains=search) | Q(author__icontains=search)
             )
 
-        category = self.request.GET.get('category')
+        category = self.request.GET.get("category")
         if category:
             queryset = queryset.filter(category__slug=category)
 
@@ -104,17 +120,12 @@ class BookListView(ListView):
         context["category_options"] = [
             {
                 "category": category,
-                "selected": (
-                    "selected"
-                    if category.slug == selected_category
-                    else ""
-                ),
-           }
-           for category in categories
+                "selected": ("selected" if category.slug == selected_category else ""),
+            }
+            for category in categories
         ]
 
         return context
-
 
 
 class BookDetailView(DetailView):
@@ -142,8 +153,8 @@ class BookCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
     model = Book
     form_class = BookForm
-    template_name = 'books/book_form.html'
-    success_url = reverse_lazy('books:book_list')
+    template_name = "books/book_form.html"
+    success_url = reverse_lazy("books:book_list")
 
     def test_func(self):
         return self.request.user.is_staff
@@ -154,8 +165,8 @@ class BookUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     model = Book
     form_class = BookForm
-    template_name = 'books/book_form.html'
-    success_url = reverse_lazy('books:book_list')
+    template_name = "books/book_form.html"
+    success_url = reverse_lazy("books:book_list")
 
     def test_func(self):
         return self.request.user.is_staff
@@ -165,11 +176,12 @@ class BookDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     """Allow staff users to delete an existing book."""
 
     model = Book
-    template_name = 'books/book_confirm_delete.html'
+    template_name = "books/book_confirm_delete.html"
 
     def test_func(self):
         return self.request.user.is_staff
-    success_url = reverse_lazy('books:book_list')
+
+    success_url = reverse_lazy("books:book_list")
 
 
 def cart_add(request, book_id):
@@ -178,7 +190,7 @@ def cart_add(request, book_id):
     cart = Cart(request)
     book = Book.objects.get(id=book_id)
     cart.add(book=book)
-    return redirect('books:cart_detail')
+    return redirect("books:cart_detail")
 
 
 def cart_remove(request, book_id):
@@ -187,7 +199,7 @@ def cart_remove(request, book_id):
     cart = Cart(request)
     book = Book.objects.get(id=book_id)
     cart.remove(book)
-    return redirect('books:book_list')
+    return redirect("books:book_list")
 
 
 def cart_clear(request):
@@ -195,7 +207,7 @@ def cart_clear(request):
 
     cart = Cart(request)
     cart.clear()
-    return redirect('books:book_list')
+    return redirect("books:book_list")
 
 
 def create_checkout_session(request):
@@ -218,30 +230,29 @@ def create_checkout_session(request):
         if book is None:
             continue
 
-        line_items.append({
-            "price_data": {
-                "currency": "eur",
-                "product_data": {
-                    "name": book.title,
+        line_items.append(
+            {
+                "price_data": {
+                    "currency": "eur",
+                    "product_data": {
+                        "name": book.title,
+                    },
+                    "unit_amount": int(book.price * 100),
                 },
-                "unit_amount": int(book.price * 100),
-            },
-            "quantity": item["quantity"],
-        })
+                "quantity": item["quantity"],
+            }
+        )
 
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],
         line_items=line_items,
         mode="payment",
-        success_url=request.build_absolute_uri(
-            reverse("books:create_order")
-        ),
-        cancel_url=request.build_absolute_uri(
-            reverse("books:book_list")
-        ),
+        success_url=request.build_absolute_uri(reverse("books:create_order")),
+        cancel_url=request.build_absolute_uri(reverse("books:book_list")),
     )
 
     return redirect(session.url)
+
 
 def create_order(request):
     """Create an order from the cart and send a confirmation email after commit."""
@@ -264,10 +275,7 @@ def create_order(request):
         transaction.on_commit(
             lambda: send_order_email.delay(
                 subject="Order created",
-                message=(
-                    f"Your order #{order.id} "
-                    "has been created successfully."
-                ),
+                message=(f"Your order #{order.id} " "has been created successfully."),
                 recipient_email=settings.DEFAULT_FROM_EMAIL,
             )
         )
@@ -277,14 +285,13 @@ def create_order(request):
     return redirect("books:book_list")
 
     send_mail(
-    subject="Order created",
-    message=f"Your order #{order.id} has been created successfully.",
-    from_email=settings.DEFAULT_FROM_EMAIL,
-    recipient_list=[settings.DEFAULT_FROM_EMAIL],
-    fail_silently=False,
+        subject="Order created",
+        message=f"Your order #{order.id} has been created successfully.",
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[settings.DEFAULT_FROM_EMAIL],
+        fail_silently=False,
     )
 
-    
     return redirect("books:book_list")
 
 
@@ -293,6 +300,7 @@ def cart_detail(request):
 
     cart = Cart(request)
     return render(request, "books/cart_detail.html", {"cart": cart})
+
 
 class CategoryViewSet(viewsets.ModelViewSet):
     """API endpoint for viewing and managing book categories."""
@@ -311,15 +319,19 @@ class BookViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
     filterset_fields = ["author", "category", "stock"]
 
+
 class OrderViewSet(viewsets.ModelViewSet):
     """API endpoint for viewing and managing orders."""
 
-    queryset = Order.objects.prefetch_related(
-        "items__book__category"
-    ).all().order_by("-created_at")
+    queryset = (
+        Order.objects.prefetch_related("items__book__category")
+        .all()
+        .order_by("-created_at")
+    )
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
     filterset_fields = ["created_at"]
+
 
 class CartViewSet(viewsets.ViewSet):
     """API endpoint for managing the session-based shopping cart."""
