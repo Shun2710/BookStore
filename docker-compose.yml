@@ -8,6 +8,7 @@ services:
     ports:
       - "8000:8000"
     environment:
+      SECRET_KEY: ${SECRET_KEY}
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
       STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:-}
       SENTRY_DSN: ${SENTRY_DSN:-}

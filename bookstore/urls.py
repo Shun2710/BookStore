@@ -9,8 +9,10 @@ from rest_framework_simplejwt.views import (
 )
 from django.contrib import admin
 from django.urls import include, path
+from bookstore.health import health_check
 
 urlpatterns = [
+    path("health/", health_check, name="health_check"),
     path('admin/', admin.site.urls),
     path("api/", include("books.api_urls")),
     path(
