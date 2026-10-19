@@ -5,14 +5,12 @@ from rest_framework.permissions import (
 )
 
 
-class IsAdminOrReadOnly(IsAdminUser):
-    """Allow read access to everyone and write access only to admin users."""
+class IsOwnerOrReadOnly(BasePermission):
+    """Allow read access to everyone and editing only to the owner."""
 
-    def has_permission(self, request, view):
+    def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS:
             return True
-
-        return super().has_permission(request, view)
 
         if hasattr(obj, "user"):
             return obj.user == request.user
@@ -21,9 +19,6 @@ class IsAdminOrReadOnly(IsAdminUser):
             return obj.owner == request.user
 
         return False
-
-
-from rest_framework.permissions import IsAdminUser
 
 
 class IsAdminOrReadOnly(IsAdminUser):
