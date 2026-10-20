@@ -1,5 +1,9 @@
 # BookStore
 
+[![Django CI/CD](https://github.com/Shun2710/BookStore/actions/workflows/django.yml/badge.svg)](https://github.com/Shun2710/BookStore/actions/workflows/django.yml)
+
+![Coverage](https://img.shields.io/badge/coverage-91%25-brightgreen)
+
 BookStore is a Django-based online bookstore application.
 
 The project includes book management, categories, shopping cart functionality, order creation, Stripe Checkout integration, email notifications, internationalization, asynchronous Django views, automated testing, and Docker support.
