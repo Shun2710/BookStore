@@ -27,3 +27,13 @@ STORAGES = {
 }
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+INSTALLED_APPS = [
+    app for app in INSTALLED_APPS
+    if app != "debug_toolbar"
+]
+
+MIDDLEWARE = [
+    middleware for middleware in MIDDLEWARE
+    if middleware != "debug_toolbar.middleware.DebugToolbarMiddleware"
+]

@@ -26,7 +26,6 @@ urlpatterns = [
         name="api-docs",
     ),
     path("i18n/", include("django.conf.urls.i18n")),
-    path("__debug__/", include("debug_toolbar.urls")),
     path("accounts/", include("accounts.urls")),
     path("", include("books.urls")),
     path(
