@@ -65,6 +65,36 @@ services:
       timeout: 5s
       retries: 5
 
+  warehouse:
+    build: .
+    working_dir: /app/ProjectB
+    command: gunicorn warehouse.wsgi:application --bind 0.0.0.0:8001
+    volumes:
+      - .:/app
+    ports:
+      - "8001:8001"
+    environment:
+      WAREHOUSE_DB_PASSWORD: ${WAREHOUSE_DB_PASSWORD:?Set WAREHOUSE_DB_PASSWORD}
+      WAREHOUSE_DB_HOST: warehouse-db
+      WAREHOUSE_DB_PORT: "5432"
+    depends_on:
+      warehouse-db:
+        condition: service_healthy
+
+  warehouse-db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: warehouse_db
+      POSTGRES_USER: warehouse_user
+      POSTGRES_PASSWORD: ${WAREHOUSE_DB_PASSWORD:?Set WAREHOUSE_DB_PASSWORD}
+    volumes:
+      - warehouse_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U warehouse_user -d warehouse_db" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   redis:
     image: redis:7
     healthcheck:
@@ -76,3 +106,4 @@ services:
 volumes:
   postgres_data:
   static_volume:
+  warehouse_postgres_data:
