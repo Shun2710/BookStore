@@ -98,7 +98,7 @@ jobs:
           WAREHOUSE_DB_HOST: localhost
           WAREHOUSE_DB_PORT: "5433"
         run: |
-          DJANGO_SECRET_KEY=test-only-secret-key python ProjectB/manage.py test inventoryory
+          cd ProjectB && DJANGO_SECRET_KEY=test-only-secret-key python manage.py test inventory
 
   build:
     runs-on: ubuntu-latest
