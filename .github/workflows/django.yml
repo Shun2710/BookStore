@@ -2,9 +2,9 @@ name: Django CI/CD
 
 on:
   push:
-    branches: [main]
+    branches: [main, final-homework]
   pull_request:
-    branches: [main]
+    branches: [main, final-homework]
 
 jobs:
   lint:
@@ -50,6 +50,20 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+
+      warehouse-postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: warehouse_db
+          POSTGRES_USER: warehouse_user
+          POSTGRES_PASSWORD: testpassword
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U warehouse_user -d warehouse_db"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
           
       redis:
         image: redis:7
@@ -77,6 +91,14 @@ jobs:
       - name: Run tests with coverage
         run: |
           pytest --cov=. --cov-report=term-missing
+
+      - name: Run Warehouse tests
+        env:
+          WAREHOUSE_DB_PASSWORD: testpassword
+          WAREHOUSE_DB_HOST: localhost
+          WAREHOUSE_DB_PORT: "5433"
+        run: |
+          python ProjectB/manage.py test inventory
 
   build:
     runs-on: ubuntu-latest
