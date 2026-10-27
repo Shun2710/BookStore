@@ -215,3 +215,76 @@ README.md
 `AI_PROMPTS.md` contains the prompts used with AI.
 
 `README.md` documents the project and explains how AI was used.
+
+Final Project Architecture
+
+The final project consists of two independent Django services:
+
+ProjectA — BookStore: online bookstore with catalog, shopping cart, orders, authentication, and Stripe Checkout.
+
+ProjectB — Warehouse: inventory management service with its own PostgreSQL database and REST API.
+
+Architecture Diagram
+
+                  User / Browser
+                         |
+                       NGINX
+                         |
+                 BookStore (Django)
+                    /         \
+             PostgreSQL       Redis
+                                  |
+                            Celery Worker
+                            Celery Beat
+
+                 BookStore REST Client
+                         |
+                    HTTP / JWT
+                         |
+                  Warehouse (Django)
+                         |
+                Warehouse PostgreSQL
+
+Warehouse API
+
+Warehouse provides inventory management through Django REST Framework.
+
+Stock records contain book_id and quantity.
+
+Authenticated users can read stock information.
+
+Administrators can create, update, and delete stock records.
+
+JWT authentication is supported.
+
+API documentation is available through Swagger.
+
+Local addresses:
+
+BookStore: http://localhost:8000/
+
+Warehouse API: http://localhost:8001/api/stocks/
+
+Warehouse Swagger: http://localhost:8001/api/docs/
+
+Testing Both Projects
+
+BookStore tests:
+
+docker compose exec web pytest books accounts --cov=books --cov=accounts --cov-report=term-missing -q
+
+Warehouse tests:
+
+docker compose exec warehouse python manage.py test inventory
+
+The most recent local test runs completed successfully:
+
+BookStore: 66 passing tests, 98% reported coverage.
+
+Warehouse: 5 passing tests, 95% reported coverage.
+
+CI/CD
+
+GitHub Actions runs code quality checks, automated tests for both Django projects, and a Docker image build.
+
+The final-homework branch has a successful GitHub Actions workflow run.
