@@ -33,6 +33,7 @@ services:
     volumes:
       - .:/app
     environment:
+      SECRET_KEY: ${SECRET_KEY}
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
       STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:-}
     depends_on:
@@ -46,6 +47,8 @@ services:
     command: celery -A bookstore beat --loglevel=info
     volumes:
       - .:/app
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
     depends_on:
       db:
         condition: service_healthy
