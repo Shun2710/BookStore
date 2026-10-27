@@ -91,14 +91,14 @@ jobs:
       - name: Run tests with coverage
         run: |
           pytest books accounts --cov=books --cov=accounts --cov-report=term-missing -q
-          
+
       - name: Run Warehouse tests
         env:
           WAREHOUSE_DB_PASSWORD: testpassword
           WAREHOUSE_DB_HOST: localhost
           WAREHOUSE_DB_PORT: "5433"
         run: |
-          python ProjectB/manage.py test inventory
+          DJANGO_SECRET_KEY=test-only-secret-key python ProjectB/manage.py test inventoryory
 
   build:
     runs-on: ubuntu-latest
