@@ -10,6 +10,7 @@ from django.db import transaction
 from django.core.mail import send_mail
 from django.urls import reverse, reverse_lazy
 from django.core.cache import cache
+from bookstore.warehouse_client import get_book_stock
 from django.shortcuts import get_object_or_404
 from django.views.generic import (
     ListView,
@@ -146,6 +147,18 @@ class BookDetailView(DetailView):
             cache.set(cache_key, book, timeout=300)
 
         return book
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["warehouse_stock"] = None
+
+        access_token = self.request.session.get("warehouse_access_token")
+        if access_token:
+            context["warehouse_stock"] = get_book_stock(
+                self.object.pk, access_token
+            )
+
+        return context
 
 
 class BookCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
