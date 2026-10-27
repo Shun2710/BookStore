@@ -5,9 +5,7 @@ import requests
 
 logger = logging.getLogger(__name__)
 
-WAREHOUSE_URL = os.getenv(
-    "WAREHOUSE_URL", "http://127.0.0.1:8001"
-)
+WAREHOUSE_URL = os.getenv("WAREHOUSE_URL", "http://127.0.0.1:8001")
 
 
 def get_book_stock(book_id, access_token):
@@ -32,7 +30,5 @@ def get_book_stock(book_id, access_token):
         return 0
 
     except (requests.RequestException, ValueError, KeyError, TypeError):
-        logger.exception(
-            "Warehouse API request failed for book %s", book_id
-        )
+        logger.exception("Warehouse API request failed for book %s", book_id)
         return None

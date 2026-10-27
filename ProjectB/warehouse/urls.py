@@ -9,7 +9,6 @@ from drf_spectacular.views import (
 
 from inventory.views import StockViewSet
 
-
 router = DefaultRouter()
 router.register(r"stocks", StockViewSet, basename="stock")
 
@@ -17,7 +16,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include(router.urls)),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "api/docs/",

@@ -49,9 +49,7 @@ class StockAPITest(TestCase):
         )
 
         self.assertEqual(response.status_code, 403)
-        self.assertFalse(
-            Stock.objects.filter(book_id=3).exists()
-        )
+        self.assertFalse(Stock.objects.filter(book_id=3).exists())
 
     def test_regular_user_cannot_create_stock(self):
         response = self.client.post(
@@ -60,6 +58,4 @@ class StockAPITest(TestCase):
         )
 
         self.assertEqual(response.status_code, 403)
-        self.assertFalse(
-            Stock.objects.filter(book_id=3).exists()
-        )
+        self.assertFalse(Stock.objects.filter(book_id=3).exists())
