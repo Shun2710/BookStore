@@ -21,13 +21,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-d3++91uj2vq1xvkb-w_nfhr*^5m)ms-&gh$(pijfjots0h!twa"
+SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DJANGO_DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = os.getenv(
+    "DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1"
+).split(",")
 
 # Application definition
 
@@ -79,11 +80,14 @@ WSGI_APPLICATION = "warehouse.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "warehouse_db",
-        "USER": "warehouse_user",
+        "NAME": os.getenv("WAREHOUSE_DB_NAME", "warehouse_db"),
+        "USER": os.getenv("WAREHOUSE_DB_USER", "warehouse_user"),
         "PASSWORD": os.environ["WAREHOUSE_DB_PASSWORD"],
         "HOST": os.getenv("WAREHOUSE_DB_HOST", "127.0.0.1"),
         "PORT": os.getenv("WAREHOUSE_DB_PORT", "5433"),
+        "OPTIONS": {
+            "sslmode": os.getenv("WAREHOUSE_DB_SSLMODE", "prefer"),
+        },
     }
 }
 
